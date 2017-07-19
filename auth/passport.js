@@ -9,16 +9,21 @@ passport.use(new LocalStrategy({
     passReqToCallback: true
   },
   ( request, username, password, done) => {
-    Users.findByUsername( username , (err, user) => {
+    Users.findByUsername( username , (error, user) => {
       console.log('user.password <><><><><>',user.password)
-      if (err) { return done(err) }
+      if (error) { return done(error) }
       if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
+        return done(null, false, { message: 'Incorrect username.' })
       }
-      if (password !== user.password) {
-        return done(null, false);
-      }
-      return done(null, user);
+      bcrypt.compare( password, user.password, (error, response) => {
+        console.log('user ///', user )
+        console.log('password =-=-=-=',password)
+        console.log('response >>::',response)
+        if (!response) {
+          return done(null, false);
+        }
+        return done(null, user);
+      })
     })
   }
 ));
