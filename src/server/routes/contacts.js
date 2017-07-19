@@ -8,6 +8,13 @@ router.get('/new', (request, response) => {
   response.render('new')
 })
 
+router.get( '/', ( request, response ) => {
+  DbContacts.getContacts()
+    .then(( contacts ) => { response.render( 'index', { contacts })})
+    .catch( err => console.log( 'err', err ) )
+})
+
+
 router.post('/', (request, response, next) => {
   DbContacts.createContact(request.body)
     .then(function(contact) {
