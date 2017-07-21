@@ -12,7 +12,7 @@ const createUser = (email, username, password, callback) => {
     .catch( error => error )
 }
 
-const findByUsername = ( username, callback ) => {
+const findByUsername = ( username ) => {
   console.log('username',username)
   return db.one(`
     SELECT
@@ -23,23 +23,21 @@ const findByUsername = ( username, callback ) => {
       username=$1
   `,
   [ username ])
-  .then( (data, error) => {
-    callback( error, data)
-  })
+  .catch( error => console.log(error))
 }
 
-const findUserById = function(id) {
+const findUserById = (id) => {
   return db.one(`
     SELECT
-      *
+      id, username
     FROM
       users
     WHERE
       id=$1
   `,
   [ id ])
-  .then(data => data)
-  .catch( error => error )
+  .then(data => data )
+  .catch( error => console.log(error))
 }
 
 module.exports = {

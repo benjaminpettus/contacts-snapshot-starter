@@ -6,12 +6,12 @@ const bcrypt = require('bcrypt')
 
 
 passport.use(new LocalStrategy({
-    passReqToCallback: true
+    passReqToCallback: true,
+    session: true
   },
   ( request, username, password, done) => {
-    Users.findByUsername( username , (error, user) => {
-      console.log('user.password <><><><><>',user.password)
-      if (error) { return done(error) }
+    Users.findByUsername( username)
+    .then( user => {
       if (!user) {
         return done(null, false, { message: 'Incorrect username.' })
       }
@@ -22,22 +22,25 @@ passport.use(new LocalStrategy({
         return done(null, user);
       })
     })
+    .catch (error => {
+      console.error(error)
+      done(error)
+    })
   }
 ));
 
 
 
 passport.serializeUser( ( user, done ) => {
-  console.log('user', user)
   done( null, user.id )
 })
 
 passport.deserializeUser( ( id, done ) => {
-  Users.findUserById( id, ( error, user ) => {
-    console.log('user',user)
-    if ( error ) { return done( error ) }
-    done( error, user )
-  })
+  Users.findUserById( id )
+    .then( (user, err) => {
+      done( user, err )
+    })
 })
+
 
 module.exports = passport

@@ -1,18 +1,32 @@
-const express = require('express')
+const router = require('express').Router()
 const DbContacts = require('../../db/contacts')
+const Users = require('../../db/users')
 const {renderError} = require('../utils')
 
-const router = express.Router()
+
+// const loggedIn = ( request, response, next ) => {
+//   console.log('request.session.passport ::',request.session.passport)
+//   if ( request.session.passport ) {
+//     Users.findUserById( request.session.passport.user, ( error, user ) => {
+//       response.redirect('/')
+//     })
+//   }
+//   next()
+// }
+
+router.get( '/', ( request, response ) => {
+  console.log('route triggered')
+  DbContacts.getContacts()
+  .then(contacts => {
+    response.render( 'index', { contacts: contacts })
+  })
+  .catch( err => console.log( 'err', err ) )
+})
 
 router.get('/new', (request, response) => {
   response.render('new')
 })
 
-router.get( '/', ( request, response ) => {
-  DbContacts.getContacts()
-    .then(( contacts ) => { response.render( 'index', { contacts })})
-    .catch( err => console.log( 'err', err ) )
-})
 
 
 router.post('/', (request, response, next) => {
@@ -55,5 +69,7 @@ router.get('/search', (request, response, next) => {
     })
     .catch( error => renderError(error, response, response) )
 })
+
+
 
 module.exports = router
